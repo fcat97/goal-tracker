@@ -2,7 +2,9 @@ package media.uqab.goaltracker.data.repository
 
 import io.realm.kotlin.Realm
 import io.realm.kotlin.RealmConfiguration
+import kotlinx.serialization.json.Json
 import media.uqab.goaltracker.domain.model.Progress
+import media.uqab.goaltracker.domain.model.TaskRepeatType
 import media.uqab.goaltracker.domain.model.TimeTask
 import media.uqab.goaltracker.domain.model.getMidnightTime
 import media.uqab.goaltracker.domain.repository.TaskRepository
@@ -34,17 +36,19 @@ class RealmTaskRepository private constructor(private val realm: Realm) : TaskRe
         return realm.query(TimeTask::class, "id = $0", id).first().find()
     }
 
-    override suspend fun putTask(task: TimeTask, title: String, target: Long) {
+    override suspend fun putTask(task: TimeTask, title: String, target: Long, type: TaskRepeatType) {
         realm.write {
             val t = query(TimeTask::class, "id = $0", task.id).first().find()
             if (t == null) {
                 copyToRealm(TimeTask().apply {
                     this.title = title
                     this.target = target
+                    this.type = Json.encodeToString(TaskRepeatType.serializer(), type)
                 })
             } else {
                 t.title = title
                 t.target = target
+                t.type = Json.encodeToString(TaskRepeatType.serializer(), type)
             }
         }
     }

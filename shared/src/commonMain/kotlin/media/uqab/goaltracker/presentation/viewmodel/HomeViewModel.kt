@@ -3,6 +3,7 @@ package media.uqab.goaltracker.presentation.viewmodel
 import androidx.compose.runtime.mutableStateListOf
 import media.uqab.goaltracker.data.repository.RealmTaskRepository
 import media.uqab.goaltracker.domain.model.TimeTask
+import media.uqab.goaltracker.utils.sound.getMediaPlayer
 
 class HomeViewModel: ViewModel {
     var timerTasks = mutableStateListOf<TimeTask>()
@@ -11,9 +12,6 @@ class HomeViewModel: ViewModel {
         val repository = RealmTaskRepository.getInstance()
 
         timerTasks.clear()
-        repository.getTimerTasks().forEach {
-            timerTasks.add(it)
-        }
-        println("total progress: " +  repository.getProgress())
+        repository.getTimerTasks().forEach { timerTasks.add(it) }
     }
 }

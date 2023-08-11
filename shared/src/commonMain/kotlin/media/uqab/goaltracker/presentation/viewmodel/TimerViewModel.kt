@@ -10,10 +10,16 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import media.uqab.goaltracker.data.repository.RealmTaskRepository
 import media.uqab.goaltracker.domain.model.TimeTask
+import media.uqab.goaltracker.utils.preference.AppPreference
+import media.uqab.goaltracker.utils.sound.AudioRes
+import media.uqab.goaltracker.utils.sound.MediaPlayerProvider.playSound
 import kotlin.time.Duration.Companion.seconds
 
 class TimerViewModel : ViewModel {
     private val repository = RealmTaskRepository.getInstance()
+    private val settings = AppPreference.getInstance()
+    private val notificationSound = settings.getBoolean(AppPreference.KEY_NOTIFICATION_SOUND)
+    private val tickSound = settings.getBoolean(AppPreference.KEY_CLOCK_TICK_SOUND)
     var currentProgress by mutableStateOf(0)
     var currentPercent by mutableStateOf(0f)
     var taskTitle by mutableStateOf("")
@@ -43,6 +49,13 @@ class TimerViewModel : ViewModel {
                 currentPercent = try {
                     100 * currentProgress.toFloat() / target
                 } catch (ignored: Exception) { 0f }
+
+                if (tickSound) playSound(AudioRes.clock_tick)
+
+                if (currentProgress >= target) {
+                    if (notificationSound) playSound(AudioRes.task_done)
+                    stopTimer()
+                }
             }
         }
     }
@@ -68,6 +81,7 @@ class TimerViewModel : ViewModel {
     suspend fun deleteTask() {
         stopTimer()
         timeTask?.let { repository.deleteItem(it.id) }
+        if (notificationSound) playSound(AudioRes.task_done)
     }
 
     enum class TimerState {

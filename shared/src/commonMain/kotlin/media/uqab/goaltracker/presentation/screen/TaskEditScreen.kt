@@ -1,5 +1,8 @@
 package media.uqab.goaltracker.presentation.screen
 
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.animateIntAsState
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,6 +12,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.DropdownMenu
+import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -20,15 +25,24 @@ import androidx.compose.material.TextField
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.twotone.Check
+import androidx.compose.material.icons.twotone.KeyboardArrowDown
 import androidx.compose.material.icons.twotone.KeyboardArrowLeft
+import androidx.compose.material.icons.twotone.KeyboardArrowRight
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
+import media.uqab.goaltracker.domain.model.TaskRepeatType
+import media.uqab.goaltracker.presentation.component.BackButton
 import media.uqab.goaltracker.presentation.navigatior.LocalNavigator
 import media.uqab.goaltracker.presentation.navigatior.Screen
 import media.uqab.goaltracker.presentation.viewmodel.TaskEditViewModel
@@ -58,31 +72,26 @@ class TaskEditScreen(private val taskId: Long = -1L) : Screen {
             viewModel.targetInMillis = (viewModel.hour * 60 + viewModel.minute) * 60_000L // ms
         }
 
-        Scaffold(
-            topBar = {
-                TopAppBar(
-                    title = { Text("Edit Goal") },
-                    navigationIcon = {
-                        IconButton(onClick = { navigator?.onBackPress() }) {
-                            Icon(Icons.TwoTone.KeyboardArrowLeft, null)
-                        }
-                    },
-                )
-            },
-            floatingActionButton = {
-                FloatingActionButton(
-                    onClick = {
-                        coroutineScope.launch {
-                            viewModel.saveTask()
+        Scaffold(topBar = {
+            TopAppBar(
+                title = { Text("Edit Goal") },
+                navigationIcon = {
+                    BackButton { navigator?.onBackPress() }
+                },
+            )
+        }, floatingActionButton = {
+            FloatingActionButton(
+                onClick = {
+                    coroutineScope.launch {
+                        if (viewModel.saveTask()) {
                             navigator?.onBackPress()
                         }
-                    },
-                ) {
-                    Icon(Icons.TwoTone.Check, null)
-                }
-            },
-            snackbarHost = { SnackbarHost(snackBarHostState) }
-        ) { pad ->
+                    }
+                },
+            ) {
+                Icon(Icons.TwoTone.Check, null)
+            }
+        }, snackbarHost = { SnackbarHost(snackBarHostState) }) { pad ->
             Column(
                 modifier = Modifier.padding(pad).padding(12.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
@@ -118,6 +127,52 @@ class TaskEditScreen(private val taskId: Long = -1L) : Screen {
                     )
                 }
 
+                ExposedDropdownMenuBox(modifier = Modifier.fillMaxWidth(), listOf(
+                    TaskRepeatType.DAILY,
+                    TaskRepeatType.WEEKLY,
+                    TaskRepeatType.MONTHLY,
+                    TaskRepeatType.YEARLY
+                ), viewModel.type, onSelect = { viewModel.type = it })
+
+            }
+        }
+    }
+
+    @Composable
+    private fun ExposedDropdownMenuBox(
+        modifier: Modifier,
+        options: List<TaskRepeatType>,
+        selected: TaskRepeatType,
+        onSelect: (TaskRepeatType) -> Unit
+    ) {
+        var expanded by remember { mutableStateOf(false) }
+        val onDismiss = { expanded = false }
+        val rotation by animateFloatAsState(if (expanded) 90f else 0f)
+
+        Box(modifier) {
+            TextField(readOnly = true,
+                value = selected.name,
+                onValueChange = { },
+                label = { Text("Repeat") },
+                enabled = false,
+                trailingIcon = {
+                    Icon(
+                        Icons.TwoTone.KeyboardArrowRight, null, modifier = Modifier.rotate(rotation)
+                    )
+                },
+                modifier = Modifier.clickable {
+                    expanded = true
+                })
+
+            DropdownMenu(expanded, onDismiss) {
+                for (item in options) {
+                    DropdownMenuItem(onClick = {
+                        onSelect(item)
+                        onDismiss()
+                    }) {
+                        Text(text = item.name)
+                    }
+                }
             }
         }
     }
