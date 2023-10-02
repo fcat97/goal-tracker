@@ -4,6 +4,7 @@ plugins {
     id("io.realm.kotlin")
     id("org.jetbrains.compose") version "1.4.3"
     kotlin("plugin.serialization")
+    id("dev.icerock.mobile.multiplatform-resources")
 
 }
 
@@ -39,6 +40,9 @@ kotlin {
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
                 implementation("com.russhwolf:multiplatform-settings-no-arg:1.0.0")
 
+                implementation("dev.icerock.moko:resources:0.23.0")
+                implementation("dev.icerock.moko:resources-compose:0.23.0") // for compose multiplatform
+
                 // implementation("io.realm.kotlin:library-sync:1.10.0") // If using Device Sync
             }
         }
@@ -62,10 +66,5 @@ android {
     compileSdk = 33
     defaultConfig {
         minSdk = 21
-    }
-    sourceSets {
-        named("main") {
-            res.srcDirs("src/commonMain/resources")
-        }
     }
 }

@@ -8,7 +8,9 @@ import io.realm.kotlin.types.annotations.PrimaryKey
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 import kotlinx.serialization.json.Json
+import media.uqab.goaltracker.utils.timeInMillis
 import org.mongodb.kbson.ObjectId
+import java.time.LocalDate
 
 
 @Serializable
@@ -26,7 +28,7 @@ class TimeTask() : RealmObject {
      */
     @Ignore
     val progress: Long
-        get() = progressList.totalProgress(RepeatTypeConverter.deserialize(type))
+        get() = progressList.totalProgress(_type, LocalDate.now())
 
     val progressPercentage: Float
         get() = try {
@@ -39,6 +41,7 @@ class TimeTask() : RealmObject {
     var _id: ObjectId = ObjectId()
 
     var type: String = RepeatTypeConverter.serialize(TaskRepeatType.DAILY)
+    private val _type: TaskRepeatType get() = RepeatTypeConverter.deserialize(type)
 
     @Transient
     var progressList: RealmList<Progress> = realmListOf()
@@ -50,8 +53,16 @@ class TimeTask() : RealmObject {
 
     @Ignore
     val todayProgress: Progress? get() = progressList.firstOrNull {
-        println("getTodayProgress $it")
-        it.dateCreated == getMidnightTime()
+        it.dateCreated == LocalDate.now().atStartOfDay().timeInMillis
+    }
+
+    fun getProgressOf(date: LocalDate): Float {
+        val total = progressList.totalProgress(_type, date)
+        return try {
+            100f * total / target
+        } catch (ignored: Exception) {
+            0f
+        }
     }
 
     override fun toString(): String {

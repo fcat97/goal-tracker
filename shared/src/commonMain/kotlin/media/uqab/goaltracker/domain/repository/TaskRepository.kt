@@ -9,5 +9,5 @@ interface TaskRepository {
     suspend fun getTask(id: Long): TimeTask?
     suspend fun putTask(task: TimeTask, title: String, target: Long, type: TaskRepeatType)
     suspend fun putProgress(task: TimeTask, progress: Long)
-    suspend fun deleteItem(id: Long)
+    suspend fun deleteTask(id: Long)
 }

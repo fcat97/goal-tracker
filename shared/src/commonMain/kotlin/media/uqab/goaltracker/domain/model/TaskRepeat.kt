@@ -9,7 +9,8 @@ enum class TaskRepeatType(val data: String) {
     WEEKLY("weekly"),
     MONTHLY("monthly"),
     YEARLY("yearly"),
-    IN_DAYS("1")
+    IN_DAYS("1"),
+    ON_COMPLETE("onComplete")
 }
 
 object RepeatTypeConverter {

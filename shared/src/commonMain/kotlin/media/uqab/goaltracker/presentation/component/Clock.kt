@@ -1,6 +1,14 @@
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
@@ -8,14 +16,23 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.dp
 import kotlin.math.cos
 import kotlin.math.sin
 
 @Composable
-fun Clock(modifier: Modifier, size: Float, seconds: Int, minutes: Int, hours: Int, targetTime: Int) {
+fun Clock(
+    modifier: Modifier,
+    size: Float,
+    seconds: Int,
+    minutes: Int,
+    hours: Int,
+    targetTime: Int
+) {
     val density = LocalDensity.current.density
-    val center = Offset(size / 2, size / 2) // Center of the clock
+    val center = Offset(density * size / 2f, density * size / 2f) // Center of the clock
     val textColor = MaterialTheme.colors.onBackground
 
     // Calculate positions for second, minute, and hour arms
@@ -58,8 +75,22 @@ fun Clock(modifier: Modifier, size: Float, seconds: Int, minutes: Int, hours: In
 
         // Draw remaining time arc lines (hours, minutes, seconds)
         drawArcLine(center, hourAngle, remainingHourAngle, size / 3, Color.Blue, 6f * density)
-        drawArcLine(center, minuteAngle, remainingMinuteAngle, ((size / 3) - 10), Color.Green, 4f * density)
-        drawArcLine(center, secondAngle, remainingSecondAngle, ((size / 3) - 20), Color.Red, 3f * density)
+        drawArcLine(
+            center,
+            minuteAngle,
+            remainingMinuteAngle,
+            ((size / 3) - 10),
+            Color.Green,
+            4f * density
+        )
+        drawArcLine(
+            center,
+            secondAngle,
+            remainingSecondAngle,
+            ((size / 3) - 20),
+            Color.Red,
+            3f * density
+        )
 
         // Draw second arm
         drawLine(Color.Red, center, secondArmEnd, 2f * density, cap = StrokeCap.Round)

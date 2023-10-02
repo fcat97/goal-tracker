@@ -6,7 +6,6 @@ import kotlinx.serialization.json.Json
 import media.uqab.goaltracker.domain.model.Progress
 import media.uqab.goaltracker.domain.model.TaskRepeatType
 import media.uqab.goaltracker.domain.model.TimeTask
-import media.uqab.goaltracker.domain.model.getMidnightTime
 import media.uqab.goaltracker.domain.repository.TaskRepository
 
 class RealmTaskRepository private constructor(private val realm: Realm) : TaskRepository {
@@ -61,17 +60,14 @@ class RealmTaskRepository private constructor(private val realm: Realm) : TaskRe
                 if (p != null) {
                     p.progress = progress
                 } else {
-                    p = Progress().apply {
-                        this.task = task
-                        this.progress = progress
-                    }
+                    p = Progress.new(task, progress)
                     task.progressList.add(p)
                 }
             }
         }
     }
 
-    override suspend fun deleteItem(id: Long) {
+    override suspend fun deleteTask(id: Long) {
         realm.write {
             val t = query(TimeTask::class, "id == $0", id).first().find()
             if (t != null) {
@@ -85,9 +81,5 @@ class RealmTaskRepository private constructor(private val realm: Realm) : TaskRe
 
     override suspend fun getTimerTasks(): List<TimeTask> {
         return realm.query(TimeTask::class).find().toList()
-    }
-
-    suspend fun getProgress(): Long {
-        return realm.query(Progress::class).count().find()
     }
 }

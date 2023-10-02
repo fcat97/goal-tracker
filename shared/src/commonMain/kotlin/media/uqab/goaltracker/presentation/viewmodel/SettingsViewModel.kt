@@ -14,7 +14,7 @@ class SettingsViewModel: ViewModel {
         playClockSound = it
     }
 
-    var playNotificationSound by mutableStateOf(settings.getBoolean(AppPreference.KEY_CLOCK_TICK_SOUND))
+    var playNotificationSound by mutableStateOf(settings.getBoolean(AppPreference.KEY_NOTIFICATION_SOUND))
     val onNotificationSettingChange: (Boolean) -> Unit = {
         settings.setBoolean(AppPreference.KEY_NOTIFICATION_SOUND, it)
         playNotificationSound = it

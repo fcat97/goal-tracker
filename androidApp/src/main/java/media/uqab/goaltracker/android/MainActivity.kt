@@ -12,7 +12,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             MyApplicationTheme {
-                remember { ScreenNavigator() }.StartFrom { HomeScreen() }
+                remember { ScreenNavigator() }.StartFrom { HomeScreen{} }
             }
         }
     }

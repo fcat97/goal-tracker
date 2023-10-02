@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.onClick
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.Text
@@ -14,15 +13,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import media.uqab.goaltracker.domain.model.TimeTask
+import media.uqab.goaltracker.presentation.viewmodel.HomeViewModel
 
 @Composable
-fun ItemTask(timeTask: TimeTask, isFirst: Boolean, isLast: Boolean, onClick: (TimeTask) -> Unit) {
+fun ItemTask(timeTask: HomeViewModel.ItemTask, isFirst: Boolean, isLast: Boolean, onClick: (TimeTask) -> Unit) {
     val topRound = if (isFirst) 12.dp else 0.dp
     val bottomRound = if (isLast) 12.dp else 0.dp
     Card(
         elevation = 4.dp,
         modifier = Modifier.padding(vertical = 2.dp)
-            .clickable { onClick(timeTask) },
+            .clickable { onClick(timeTask.t) },
         shape = RoundedCornerShape(
             topStart = topRound,
             topEnd = topRound,
@@ -38,7 +38,7 @@ fun ItemTask(timeTask: TimeTask, isFirst: Boolean, isLast: Boolean, onClick: (Ti
         ) {
             Text(timeTask.title)
 
-            Text("${String.format("%.2f", timeTask.progressPercentage)}%")
+            Text("${String.format("%.2f", timeTask.percentage)}%")
         }
     }
 }

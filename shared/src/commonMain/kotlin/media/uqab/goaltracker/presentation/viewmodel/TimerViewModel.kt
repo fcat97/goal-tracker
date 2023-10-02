@@ -80,7 +80,7 @@ class TimerViewModel : ViewModel {
 
     suspend fun deleteTask() {
         stopTimer()
-        timeTask?.let { repository.deleteItem(it.id) }
+        timeTask?.let { repository.deleteTask(it.id) }
         if (notificationSound) playSound(AudioRes.task_done)
     }
 
