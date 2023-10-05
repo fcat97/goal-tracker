@@ -2,9 +2,11 @@
 
 Kotlin Multiplatform Routine Tracker & Todo List
 
-[x] Android
-[x] Desktop(JVM)
-[] Ios
+Currently Supported
+
+- [x] Android
+- [x] Desktop(JVM)
+- [] Ios
 
 ---
 
