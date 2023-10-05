@@ -29,9 +29,12 @@ compose.desktop {
         }
 
         nativeDistributions {
-            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
+            targetFormats(/*TargetFormat.Dmg,*/ TargetFormat.Msi, /*TargetFormat.Deb,*/ TargetFormat.Exe)
             packageName = "Goal Tracker"
             packageVersion = "1.0.1"
+            windows {
+                iconFile.set(project.file("icon.ico"))
+            }
         }
     }
 }
