@@ -1,6 +1,10 @@
-Goal Tracker
+## Goal Tracker
 
-Personal Routine Tracker & Todo List
+Kotlin Multiplatform Routine Tracker & Todo List
+
+[x] Android
+[x] Desktop(JVM)
+[] Ios
 
 ---
 
