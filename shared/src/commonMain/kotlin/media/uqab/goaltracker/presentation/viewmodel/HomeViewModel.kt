@@ -6,13 +6,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import media.uqab.goaltracker.data.repository.RealmTaskRepository
 import media.uqab.goaltracker.domain.model.Task
-import media.uqab.goaltracker.domain.model.TimeTask
 import media.uqab.goaltracker.presentation.component.Entity
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 class HomeViewModel: ViewModel {
-    var timerTasks = mutableStateListOf<TimeTask>()
+    var timerTasks = mutableStateListOf<Task>()
     var showingTask by mutableStateOf<List<ItemTask>>(emptyList())
     var chartEntity by mutableStateOf<List<Entity>>(emptyList())
 
@@ -35,16 +34,16 @@ class HomeViewModel: ViewModel {
         val formatter = DateTimeFormatter.ofPattern("EEE dd MMM, yy")
         currentDate = selectedDate.format(formatter)
 
-        var progress = 0f
-        timerTasks.forEach { progress += it.getProgressOf(selectedDate) }
-        progress /= timerTasks.size
-        currentDateProgress = "${String.format("%.2f", progress)} %"
+        var percentage = 0f
+        timerTasks.forEach { percentage += it.getPercentageOf(selectedDate) }
+        percentage /= timerTasks.size
+        currentDateProgress = "${String.format("%.2f", percentage)} %"
 
-        showingTask = timerTasks.map { ItemTask(it, it.title, it.getProgressOf(selectedDate)) }
+        showingTask = timerTasks.map { ItemTask(it, it.title, it.getPercentageOf(selectedDate)) }
         chartEntity = showingTask.mapIndexed { index, task ->
             Entity(index.toFloat(), task.percentage)
         }
     }
 
-    data class ItemTask(val t: TimeTask, val title: String, val percentage: Float)
+    data class ItemTask(val t: Task, val title: String, val percentage: Float)
 }

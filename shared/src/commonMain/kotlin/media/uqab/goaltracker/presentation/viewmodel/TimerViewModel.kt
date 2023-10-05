@@ -9,7 +9,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import media.uqab.goaltracker.data.repository.RealmTaskRepository
-import media.uqab.goaltracker.domain.model.TimeTask
+import media.uqab.goaltracker.domain.model.Task
 import media.uqab.goaltracker.utils.preference.AppPreference
 import media.uqab.goaltracker.utils.sound.AudioRes
 import media.uqab.goaltracker.utils.sound.MediaPlayerProvider.playSound
@@ -20,6 +20,7 @@ class TimerViewModel : ViewModel {
     private val settings = AppPreference.getInstance()
     private val notificationSound = settings.getBoolean(AppPreference.KEY_NOTIFICATION_SOUND)
     private val tickSound = settings.getBoolean(AppPreference.KEY_CLOCK_TICK_SOUND)
+
     var currentProgress by mutableStateOf(0)
     var currentPercent by mutableStateOf(0f)
     var taskTitle by mutableStateOf("")
@@ -27,13 +28,13 @@ class TimerViewModel : ViewModel {
     var timerState by mutableStateOf(TimerState.Stopped)
 
     private var runningTimer: Job? = null
-    private var timeTask: TimeTask? = null
+    private var task: Task? = null
 
     suspend fun getTask(id: Long) {
-        timeTask = repository.getTask(id)?.let {
+        task = repository.getTask(id)?.let {
             taskTitle = it.title
-            target = (it.target / 1_000L).toInt()
-            currentProgress = (it.progress / 1_000).toInt()
+            target = it.repeat.target.toInt()
+            currentProgress = it.progress.toInt()
             currentPercent = it.progressPercentage
             it
         }
@@ -73,14 +74,14 @@ class TimerViewModel : ViewModel {
     }
 
     private suspend fun updateTask() {
-        timeTask?.let { task ->
-            repository.putProgress(task, currentProgress * 1000L)
+        task?.let { task ->
+            repository.putProgress(task, currentProgress.toFloat())
         }
     }
 
     suspend fun deleteTask() {
         stopTimer()
-        timeTask?.let { repository.deleteTask(it.id) }
+        task?.let { repository.deleteTask(it.id) }
         if (notificationSound) playSound(AudioRes.task_done)
     }
 

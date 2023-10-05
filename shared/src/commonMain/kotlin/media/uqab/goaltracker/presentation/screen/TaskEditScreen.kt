@@ -1,22 +1,19 @@
 package media.uqab.goaltracker.presentation.screen
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.Scaffold
 import androidx.compose.material.SnackbarHost
 import androidx.compose.material.SnackbarHostState
@@ -25,8 +22,6 @@ import androidx.compose.material.TextField
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.twotone.Check
-import androidx.compose.material.icons.twotone.KeyboardArrowDown
-import androidx.compose.material.icons.twotone.KeyboardArrowLeft
 import androidx.compose.material.icons.twotone.KeyboardArrowRight
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -35,14 +30,18 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
+import media.uqab.goaltracker.domain.model.Daily
+import media.uqab.goaltracker.domain.model.Monthly
 import media.uqab.goaltracker.domain.model.TaskRepeatType
+import media.uqab.goaltracker.domain.model.Weekly
+import media.uqab.goaltracker.domain.model.Yearly
+import media.uqab.goaltracker.domain.model.name
 import media.uqab.goaltracker.presentation.component.BackButton
+import media.uqab.goaltracker.presentation.component.WeekDaysSelector
 import media.uqab.goaltracker.presentation.navigatior.LocalNavigator
 import media.uqab.goaltracker.presentation.navigatior.Screen
 import media.uqab.goaltracker.presentation.viewmodel.TaskEditViewModel
@@ -66,10 +65,6 @@ class TaskEditScreen(private val taskId: Long = -1L) : Screen {
                 snackBarHostState.showSnackbar(it.msg)
                 null
             }
-        }
-
-        LaunchedEffect(viewModel.hour, viewModel.minute) {
-            viewModel.targetInMillis = (viewModel.hour * 60 + viewModel.minute) * 60_000L // ms
         }
 
         Scaffold(topBar = {
@@ -127,13 +122,22 @@ class TaskEditScreen(private val taskId: Long = -1L) : Screen {
                     )
                 }
 
-                ExposedDropdownMenuBox(modifier = Modifier.fillMaxWidth(), listOf(
-                    TaskRepeatType.DAILY,
-                    TaskRepeatType.WEEKLY,
-                    TaskRepeatType.MONTHLY,
-                    TaskRepeatType.YEARLY
-                ), viewModel.type, onSelect = { viewModel.type = it })
+                ExposedDropdownMenuBox(
+                    modifier = Modifier.fillMaxWidth(),
+                    listOf(
+                        Daily(1f),
+                        Weekly(target = 1f),
+                        Monthly(target = 1f),
+                        Yearly(target = 1f)
+                    ),
+                    viewModel.repeat, onSelect = { viewModel.repeat = it },
+                )
 
+                AnimatedVisibility(viewModel.repeat is Weekly) {
+                    WeekDaysSelector(viewModel.selectedWeekDay) {
+                        viewModel.selectedWeekDay = it
+                    }
+                }
             }
         }
     }
@@ -151,7 +155,7 @@ class TaskEditScreen(private val taskId: Long = -1L) : Screen {
 
         Box(modifier) {
             TextField(readOnly = true,
-                value = selected.name,
+                value = selected.name(),
                 onValueChange = { },
                 label = { Text("Repeat") },
                 enabled = false,
@@ -170,7 +174,7 @@ class TaskEditScreen(private val taskId: Long = -1L) : Screen {
                         onSelect(item)
                         onDismiss()
                     }) {
-                        Text(text = item.name)
+                        Text(text = item.name())
                     }
                 }
             }

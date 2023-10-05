@@ -12,11 +12,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import media.uqab.goaltracker.domain.model.TimeTask
+import media.uqab.goaltracker.domain.model.Task
 import media.uqab.goaltracker.presentation.viewmodel.HomeViewModel
 
 @Composable
-fun ItemTask(timeTask: HomeViewModel.ItemTask, isFirst: Boolean, isLast: Boolean, onClick: (TimeTask) -> Unit) {
+fun ItemTask(timeTask: HomeViewModel.ItemTask, isFirst: Boolean, isLast: Boolean, onClick: (Task) -> Unit) {
     val topRound = if (isFirst) 12.dp else 0.dp
     val bottomRound = if (isLast) 12.dp else 0.dp
     Card(

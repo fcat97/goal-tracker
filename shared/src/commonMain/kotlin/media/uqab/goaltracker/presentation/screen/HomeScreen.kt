@@ -34,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
+import media.uqab.goaltracker.domain.model.test
 import media.uqab.goaltracker.getPlatform
 import media.uqab.goaltracker.presentation.component.BarChart
 import media.uqab.goaltracker.presentation.component.ItemTask
@@ -50,6 +51,7 @@ class HomeScreen(private val onExit: () -> Unit) : Screen {
     @Composable
     override fun Content() {
         LaunchedEffect(Unit) {
+            test()
             viewModel.getTimerTasks()
         }
 

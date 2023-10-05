@@ -1,13 +1,20 @@
 package media.uqab.goaltracker.domain.repository
 
 import media.uqab.goaltracker.domain.model.TaskRepeatType
-import media.uqab.goaltracker.domain.model.TimeTask
+import media.uqab.goaltracker.domain.model.Task
+import media.uqab.goaltracker.domain.model.TaskType
 
 interface TaskRepository {
-    suspend fun createTimerTask(task: TimeTask)
-    suspend fun getTimerTasks(): List<TimeTask>
-    suspend fun getTask(id: Long): TimeTask?
-    suspend fun putTask(task: TimeTask, title: String, target: Long, type: TaskRepeatType)
-    suspend fun putProgress(task: TimeTask, progress: Long)
+    suspend fun createTimerTask(task: Task)
+    suspend fun getTimerTasks(): List<Task>
+    suspend fun getTask(id: Long): Task?
+    suspend fun putTask(
+        task: Task,
+        title: String,
+        type: TaskType,
+        repeat: TaskRepeatType
+    )
+
+    suspend fun putProgress(task: Task, progress: Float)
     suspend fun deleteTask(id: Long)
 }
